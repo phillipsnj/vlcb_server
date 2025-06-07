@@ -1,10 +1,8 @@
 import socket
-import time
-import threading
-import socket
+import asyncio
 
 
-class VlcbClient(threading.Thread):
+class VlcbClient():
     """
     Class to connect to a Cbus network via ethernet
     """
@@ -16,32 +14,36 @@ class VlcbClient(threading.Thread):
         :param host Address of the CBUS network interface.
         :param host port address.
         """
-        super().__init__()
+        # super().__init__()
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
         self.host = host  # Get local machine name
         self.port = port  # Reserve a port for your service.
         self.s.connect((host, port))
         self.function = function
 
-    def run(self):
-        try:
-            while True:
-                # print('receiving data...')
-                data = self.s.recv(1024)
-                output = data.decode()
-                messages = output.split(';')
+    async def run(self):
+        print(f'Starting messages_from_server')
+        while True:
+            # print(f'Receive from Server Loop')
+            try:
+                # Receive messages from the server
+                message = self.s.recv(1024).decode()
+                # print(f'Receive Loop 2')
+            except Exception as e:
+                if e.args[0] in (35, 10035):
+                    pass
+                # If an error occurs, break out of the loop
+                else:
+                    print(f"Error {str(e)}")
+                    break
+            else:
+                messages = message.split(';')
                 del messages[-1]
                 for msg in messages:
-                    # self.action_opcode(data.decode())
-                    self.function(msg + ";")
-                # print(data.decode()+ " : " +mergCbus.getOpCode(data.decode()))
-                # self.execute(data.decode())
-                if not data:
-                    break
-        except KeyboardInterrupt:
-            print('interrupted!')
-            self.close()
-        print('connection closed')
+                    print(f'Message Received from Server: {msg}')
+                    self.function((msg + ';'))
+
+            await asyncio.sleep(0.0001)
 
     def send(self, msg):
         # time.sleep(1)
@@ -50,17 +52,19 @@ class VlcbClient(threading.Thread):
 
 
 def process_message(msg):
-    print(msg)
+    print(f'Process Message: {msg}')
 
 
-def main(name: str) -> None:
+async def main(name: str) -> None:
     cbus_header = ':SB060N'
-    cbus_ethernet = CbusEthernet(process_message, "localhost", 5550)
-    cbus_ethernet.start()
-    cbus_ethernet.send(f'{cbus_header}0D;')
+    VLCB_client = VlcbClient(process_message, "localhost", 5550)
+    asyncio.create_task(VLCB_client.run())
+    # cbus_ethernet.start()
+    VLCB_client.send(f'{cbus_header}0D;')
     while True:
-        pass
+        await asyncio.sleep(1)
 
 
 if __name__ == '__main__':
-    main('network Client')
+    # main('network Client')
+    asyncio.run(main('network Client'))
