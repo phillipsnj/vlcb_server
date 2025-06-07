@@ -53,7 +53,7 @@ class CanUsb4:
                 message = self.client.recv(1024).decode()
                 # print(f'Receive Loop 2')
             except Exception as e:
-                if e.args[0] == 35:
+                if e.args[0] in (35, 10035):
                     pass
                 # If an error occurs, break out of the loop
                 else:

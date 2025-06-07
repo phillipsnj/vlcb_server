@@ -44,7 +44,7 @@ class VLCBServer:
             print(f"Client {client_address} has disconnected")
             self.clients.remove(client)
             writer.close()
-            await writer.wait_closed()
+#            await writer.wait_closed()
 
     async def broadcast(self, message, sender):
         """Broadcast message to all clients except the sender."""
