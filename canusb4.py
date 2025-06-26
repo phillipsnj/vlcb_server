@@ -39,7 +39,7 @@ class CanUsb4:
                 data = self.usb.read().decode()
                 buffer = buffer + data
                 if data == ';':
-                    print(f'Message from USB {buffer}')
+                    # print(f'Message from USB {buffer}')
                     self.send_to_server(buffer)
                     buffer = ''
             await asyncio.sleep(0.0001)
@@ -63,13 +63,13 @@ class CanUsb4:
                 messages = message.split(';')
                 del messages[-1]
                 for msg in messages:
-                    print(f'Message Received from Server: {msg}')
+                    # print(f'Message Received from Server: {msg}')
                     self.send_to_usb((msg + ';'))
 
             await asyncio.sleep(0.0001)
 
     def send_to_server(self, msg):
-        print(f'Send to Server {msg}')
+        # print(f'Send to Server {msg}')
         try:
             self.client.send(msg.encode())
         except Exception as e:

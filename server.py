@@ -33,7 +33,10 @@ class VLCBServer:
                     break
 
                 message = data.decode()
-                print(f"Received message from {client_address}: {message}")
+                # print(f"Received message from {client_address}: {message}")
+                # messages = message.split(';')
+                # del messages[-1]
+                # for msg in messages:
                 await self.broadcast(message, client)
 
         except Exception as e:
