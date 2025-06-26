@@ -18,7 +18,7 @@ class CanUsb4:
         self.com_port = com_port
         self.server = server
         self.port = port
-        self.usb = serial.Serial(self.com_port)
+        self.usb = serial.Serial(self.com_port, baudrate=115200)
         self.server_host = '127.0.0.1'
         self.server_port = 5550
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
@@ -35,14 +35,14 @@ class CanUsb4:
         print(f"Starting messages_from_usb")
         while True:
             # print(f"Messagse from USB")
-            if self.usb.inWaiting() > 0:
+            if self.usb.in_waiting:
                 data = self.usb.read().decode()
                 buffer = buffer + data
                 if data == ';':
                     # print(f'Message from USB {buffer}')
                     self.send_to_server(buffer)
                     buffer = ''
-            await asyncio.sleep(0.0001)
+            await asyncio.sleep(0.000001)
 
     async def messages_from_server(self):
         print(f'Starting messages_from_server')
@@ -66,7 +66,7 @@ class CanUsb4:
                     # print(f'Message Received from Server: {msg}')
                     self.send_to_usb((msg + ';'))
 
-            await asyncio.sleep(0.0001)
+            await asyncio.sleep(0.0000001)
 
     def send_to_server(self, msg):
         # print(f'Send to Server {msg}')
