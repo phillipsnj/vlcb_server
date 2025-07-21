@@ -1,0 +1,70 @@
+{
+  "0D": {
+    "op_code": {
+      "type": "string",
+      "start" : 7,
+      "length": 2
+    }
+  },
+  "B6": {
+    "op_code": {
+      "type": "string",
+      "start" : 7,
+      "length": 2
+    },
+    "node_number": {
+      "type": "integer",
+      "start" : 9,
+      "length": 4
+    },
+    "manufacturer_id": {
+      "type": "integer",
+      "start": 13,
+      "length": 2
+    },
+    "module_id": {
+      "type": "integer",
+      "start": 15,
+      "length": 2
+    },
+    "flags": {
+      "type": "string",
+      "start": 9,
+      "length": 2
+    }
+  },
+  "90": {
+    "op_code": {
+      "type": "string",
+      "start": 7,
+      "length": 2
+    },
+    "node_number": {
+      "type": "integer",
+      "start": 9,
+      "length": 4
+    },
+    "event_number": {
+      "type": "integer",
+      "start": 13,
+      "length": 4
+    }
+  },
+  "91": {
+    "op_code": {
+      "type": "string",
+      "start" : 7,
+      "length": 2
+    },
+    "node_number": {
+      "type": "integer",
+      "start" : 9,
+      "length": 4
+    },
+    "event_number": {
+      "type": "integer",
+      "start" : 13,
+      "length": 4
+    }
+  }
+}

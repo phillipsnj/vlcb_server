@@ -40,7 +40,7 @@ class VlcbClient():
                 messages = message.split(';')
                 del messages[-1]
                 for msg in messages:
-                    print(f'Message Received from Server: {msg}')
+                    print(f'VLCB client - Message Received from Server: {msg};')
                     self.function((msg + ';'))
 
             await asyncio.sleep(0.0001)
