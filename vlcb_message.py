@@ -115,7 +115,7 @@ def json_to_message(json_msg):
                 elif type == 'int':
                     vlcb_frame = replacer(vlcb_frame, pad(json_msg[field], length) , start, length)
             elif type in ('str-out', 'str-json'):
-                print(f'Field : {field} : {values} -- {field_details}')
+                print(f'Field not required : {field} : {values} -- {field_details}')
             else:
                 print(f'JSON ERROR:{field} : {values} {field_details}')
         # print(f'output : {vlcb_frame}')
