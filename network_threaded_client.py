@@ -1,8 +1,9 @@
 import socket
-import asyncio
+import threading
+import time
 
 
-class VlcbClient():
+class VlcbClient(threading.Thread):
     """
     Class to connect to a Cbus network via ethernet
     """
@@ -15,13 +16,15 @@ class VlcbClient():
         :param host port address.
         """
         # super().__init__()
+        super().__init__()
+        threading.Thread.__init__(self)
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
         self.host = host  # Get local machine name
         self.port = port  # Reserve a port for your service.
         self.s.connect((host, port))
         self.function = function
 
-    async def run(self):
+    def run(self):
         print(f'Starting messages_from_server')
         while True:
             # print(f'Receive from Server Loop')
@@ -43,7 +46,7 @@ class VlcbClient():
                     # print(f'VLCB client - Message Received from Server: {msg};')
                     self.function((msg + ';'))
 
-            await asyncio.sleep(0.0001)
+            # await asyncio.sleep(0.0001)
 
     def send(self, msg):
         # time.sleep(1)
@@ -55,16 +58,16 @@ def process_message(msg):
     print(f'Process Message: {msg}')
 
 
-async def main(name: str) -> None:
+def main(name: str) -> None:
     cbus_header = ':SB060N'
     VLCB_client = VlcbClient(process_message, "localhost", 5550)
-    asyncio.create_task(VLCB_client.run())
+    VLCB_client.run()
     # cbus_ethernet.start()
     VLCB_client.send(f'{cbus_header}0D;')
     while True:
-        await asyncio.sleep(1)
+        time.sleep(1)
 
 
 if __name__ == '__main__':
     # main('network Client')
-    asyncio.run(main('network Client'))
+    main('network Client')

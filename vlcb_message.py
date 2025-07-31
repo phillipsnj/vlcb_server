@@ -1,8 +1,8 @@
 import json
 import tomllib
 
-with open('vlcb_server/vlcb_message.json') as op_codes_file:
-    opcodes = json.load(op_codes_file)
+# with open('vlcb_server/vlcb_message.json') as op_codes_file:
+#     opcodes = json.load(op_codes_file)
 
 with open("vlcb_server/vlcb_message.toml", "rb") as op_codes_filedes_toml_file:
     opcodes_toml = tomllib.load(op_codes_filedes_toml_file)
@@ -35,6 +35,12 @@ def checkbit(number, bit):
 
 
 def flags(flags):
+    """
+    Return dictionary of Parameter flags
+    :param Single Byte integer:
+    :return: Dictionary of standard parameters
+    """
+    # flags = int(input, 16)
     output = {}
     output['consumer'] = checkbit(flags, 0)
     output['producer'] = checkbit(flags, 1)
@@ -42,6 +48,7 @@ def flags(flags):
     output['bootloading'] = checkbit(flags, 3)
     output['coe'] = checkbit(flags, 4)
     output['learn'] = checkbit(flags, 5)
+    output['vlcb'] = checkbit(flags, 6)
     return output
 
 
@@ -62,32 +69,40 @@ def replacer(s, newstring, index, length, nofail=False):
 
 
 def message_to_json(msg):
-    output = {}
-    for field, values in opcodes_toml[opcode(msg)].items():
-        # print(f"opcode: {field}, values: {values}")
-        if values[0] == ('str'):
-            output[field] = get_str(msg, values[1], values[2])
-            # print(f"{field} {get_str(msg, values['start'], values['length'])}")
-        elif values[0] == 'int':
-            output[field] = get_int(msg, values[1], values[2])
-            # print(f"{field} {get_int(msg, values['start'], values['length'])}")
-        elif values[0] == 'str-out':
-            output[field] = get_str(msg, values[1], values[2])
-        elif values[0] == 'str-json':
-            output[field] = values[1]
-        else:
-            print(f"{field} Invalid Type : {values[0]}")
-    # print(f"Message to JSON TOML : {output2}")
-
-    return (output)
+    if opcode(msg) not in opcodes_toml:
+        print(f'opcode {opcode(msg)} not supported')
+    else:
+        output = {}
+        for field, values in opcodes_toml[opcode(msg)].items():
+            # print(f"opcode: {field}, values: {values}")
+            if values[0] == ('str'):
+                output[field] = get_str(msg, values[1], values[2])
+                # print(f"{field} {get_str(msg, values['start'], values['length'])}")
+            elif values[0] == 'int':
+                output[field] = get_int(msg, values[1], values[2])
+                # print(f"{field} {get_int(msg, values['start'], values['length'])}")
+            elif values[0] == 'str-out':
+                output[field] = get_str(msg, values[1], values[2])
+            elif values[0] == 'str-json':
+                output[field] = values[1]
+            else:
+                print(f"{field} Invalid Type : {values[0]}")
+        # print(f"Message to JSON TOML : {output2}")
+        return (output)
 
 
 def json_to_message(json_msg):
-    opcode_details = opcodes_toml[json_msg["op_code"]]
     # print(f'opcode_details : {opcode_details}')
-    if "op_code" not in json_msg:
-        return (f'op_code missing from json_msg :{json_msg}')
+    # if json_msg['op_code'] not in opcodes_toml:
+    #     print(f'opcode {opcode(json_msg)} not supported')
+    #     return
+    try:
+        opcode_details = opcodes_toml[json_msg["op_code"]]
+    except Exception as e:
+        print(f'Exception : {e}')
+        return
     else:
+        # opcode_details = opcodes_toml[json_msg["op_code"]]
         max_length = 0
         for field, values in opcodes_toml[json_msg["op_code"]].items():
             if values[0] in ['str', 'int']:
@@ -95,8 +110,7 @@ def json_to_message(json_msg):
                 if length > max_length:
                     max_length = length
                 if field not in json_msg:
-                    return (
-                        f'{json_msg["op_code"]} missing from json_msg : {display_opcode_details(json_msg["op_code"])}')
+                    return (f'{field} missing from json_msg : {json_msg}')
 
         vlcb_header = ':SB060N'
         vlcb_message = 'x' * (max_length - 7)
@@ -115,7 +129,8 @@ def json_to_message(json_msg):
                 elif type == 'int':
                     vlcb_frame = replacer(vlcb_frame, pad(json_msg[field], length) , start, length)
             elif type in ('str-out', 'str-json'):
-                print(f'Field not required : {field} : {values} -- {field_details}')
+                # print(f'Field not required : {field} : {values} -- {field_details}')
+                pass
             else:
                 print(f'JSON ERROR:{field} : {values} {field_details}')
         # print(f'output : {vlcb_frame}')
