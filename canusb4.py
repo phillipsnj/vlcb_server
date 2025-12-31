@@ -39,7 +39,7 @@ class CanUsb4:
                 data = self.usb.read().decode()
                 buffer = buffer + data
                 if data == ';':
-                    # print(f'Message from USB {buffer}')
+                    print(f'Message from USB {buffer}')
                     self.send_to_server(buffer)
                     buffer = ''
             await asyncio.sleep(0.000001)

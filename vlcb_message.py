@@ -87,7 +87,7 @@ def message_to_json(msg):
                 output[field] = values[1]
             else:
                 print(f"{field} Invalid Type : {values[0]}")
-        # print(f"Message to JSON TOML : {output2}")
+        print(f"Grid to JSON TOML : {output}")
         return (output)
 
 
@@ -103,6 +103,7 @@ def json_to_message(json_msg):
         return
     else:
         # opcode_details = opcodes_toml[json_msg["op_code"]]
+        # Find the length on the message and check all required fields exist
         max_length = 0
         for field, values in opcodes_toml[json_msg["op_code"]].items():
             if values[0] in ['str', 'int']:
@@ -133,7 +134,7 @@ def json_to_message(json_msg):
                 pass
             else:
                 print(f'JSON ERROR:{field} : {values} {field_details}')
-        # print(f'output : {vlcb_frame}')
+        print(f'output JSON to Grid: {vlcb_frame}')
         # display_opcode_details(op_code)
     return vlcb_frame
 
