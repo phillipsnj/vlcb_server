@@ -10,7 +10,7 @@ class CanUsb4:
     CanUSB4 - Connect an CANUSB4 to a VLCB Server
 
     Usage:
-        CanUsb(USB Port, Server Port
+        CanUsb(USBPort, Server Port, port)
 
     Example "
     """
